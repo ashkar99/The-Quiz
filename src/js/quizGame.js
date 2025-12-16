@@ -46,7 +46,7 @@ export class QuizGame {
       if (nickname) {
         this.nickname = nickname
         this.startGame()
-      }
+      } 
     })
   }
 
@@ -86,6 +86,31 @@ export class QuizGame {
       <p class="question-text">${data.question}</p>
       <div id="inputs-area"></div>
     `
+    const inputsArea = this.container.querySelector('#inputs-area')
+
+
+    this.renderTextInput(inputsArea, data)
+    
+  }
+  /**
+   * Renders a simple Text Input for open questions.
+   */
+  renderTextInput (element, data) {
+    const input = document.createElement('input')
+    input.type = 'text' // sometimes text, sometimes number, usually text is safe
+    
+    const btn = document.createElement('button')
+    btn.textContent = 'Submit Answer'
+
+    btn.addEventListener('click', () => {
+        if(input.value) {
+            this.submitAnswer(data.nextURL, { answer: input.value })
+        }
+    })
+
+    element.appendChild(input)
+    element.appendChild(btn)
+    input.focus()
   }
 
 
@@ -118,4 +143,5 @@ export class QuizGame {
     `
     this.container.querySelector('#restart-btn').addEventListener('click', () => this.init())
   }
+
 }
