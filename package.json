@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "http-server": "npx http-server -p 9001",
+    "http-server": "npx http-server dist -p 9001",
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
