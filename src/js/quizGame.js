@@ -101,7 +101,7 @@ export class QuizGame {
    */
   renderTextInput (element, data) {
     const input = document.createElement('input')
-    input.type = 'text' // sometimes text, sometimes number, usually text is safe
+    input.type = 'text' // Text input for open questions
     
     const btn = document.createElement('button')
     btn.textContent = 'Submit Answer'
@@ -124,15 +124,13 @@ export class QuizGame {
     const form = document.createElement('div')
     form.className = 'alternatives'
 
-    // 'data.alternatives' is an object like { "alt1": "answer text", "alt2": "..." }
+    // Create radio buttons for each alternative
     for (const [key, value] of Object.entries(data.alternatives)) {
       const label = document.createElement('label')
       label.innerHTML = `
         <input type="radio" name="alt" value="${key}"> 
         ${value}
       `
-      // Add click listener to submit immediately on selection (optional UX choice)
-      // or just let them select and click a submit button. Let's do a button for safety.
       form.appendChild(label)
     }
 
