@@ -89,7 +89,11 @@ export class QuizGame {
     const inputsArea = this.container.querySelector('#inputs-area')
 
 
-    this.renderTextInput(inputsArea, data)
+    if (data.alternatives) {
+      this.renderAlternatives(inputsArea, data)
+    } else {
+      this.renderTextInput(inputsArea, data)
+    }
     
   }
   /**
@@ -111,6 +115,38 @@ export class QuizGame {
     element.appendChild(input)
     element.appendChild(btn)
     input.focus()
+  }
+
+  /**
+   * Renders Radio Buttons for multi-choice questions.
+   */
+  renderAlternatives (element, data) {
+    const form = document.createElement('div')
+    form.className = 'alternatives'
+
+    // 'data.alternatives' is an object like { "alt1": "answer text", "alt2": "..." }
+    for (const [key, value] of Object.entries(data.alternatives)) {
+      const label = document.createElement('label')
+      label.innerHTML = `
+        <input type="radio" name="alt" value="${key}"> 
+        ${value}
+      `
+      // Add click listener to submit immediately on selection (optional UX choice)
+      // or just let them select and click a submit button. Let's do a button for safety.
+      form.appendChild(label)
+    }
+
+    const btn = document.createElement('button')
+    btn.textContent = 'Submit Answer'
+    btn.addEventListener('click', () => {
+      const selected = form.querySelector('input[name="alt"]:checked')
+      if (selected) {
+        this.submitAnswer(data.nextURL, { answer: selected.value })
+      }
+    })
+
+    element.appendChild(form)
+    element.appendChild(btn)
   }
 
 
