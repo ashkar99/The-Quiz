@@ -1,0 +1,121 @@
+import { QuizAPI } from './api.js'
+
+/**
+ * QuizGame
+ * The main controller for the application.
+ * Manages the game state, timer, and UI rendering.
+ */
+export class QuizGame {
+  /**
+   * @param {HTMLElement} container - The DOM element where the game is rendered.
+   */
+  constructor (container) {
+    this.container = container
+    this.api = new QuizAPI()
+
+    this.nickname = ''
+    
+    // The starting URL for the quiz
+    this.startUrl = 'https://courselab.lnu.se/quiz/question/1'
+  }
+
+  /**
+   * Initializes the game by showing the start screen.
+   */
+  init () {
+    this.renderStartScreen()
+  }
+
+  /**
+   * Renders the nickname input form.
+   */
+  renderStartScreen () {
+    this.container.innerHTML = `
+      <h2>Welcome to the Quiz!</h2>
+      <p>Enter your nickname to start.</p>
+      <input type="text" id="nickname" placeholder="Nickname" autofocus />
+      <br>
+      <button id="start-btn">Start Game</button>
+      <div id="message" class="error-message"></div>
+    `
+
+    this.container.querySelector('#start-btn').addEventListener('click', () => {
+      const input = this.container.querySelector('#nickname')
+      const nickname = input.value.trim()
+
+      if (nickname) {
+        this.nickname = nickname
+        this.startGame()
+      }
+    })
+  }
+
+  /**
+   * Starts the game.
+   */
+  async startGame () {
+    await this.fetchQuestion(this.startUrl)
+  }
+
+  /**
+   * Fetches a question and renders it.
+   * @param {string} url 
+   */
+  async fetchQuestion (url) {
+    try {
+      this.container.innerHTML = '<h3>Loading question...</h3>'
+      
+      const data = await this.api.getQuestion(url)
+      this.renderQuestion(data)
+      
+    } catch (error) {
+      console.error(error)
+      this.renderGameOver('Network Error or Server Down.')
+    }
+  }
+
+  /**
+   * Renders the Question UI based on the server response.
+   * @param {object} data - The question object from the server.
+   */
+  renderQuestion (data) {
+    // 1. Setup the Timer UI
+    this.container.innerHTML = `
+      <div id="timer-container"><div id="timer-bar"></div></div>
+      <h3>Question:</h3>
+      <p class="question-text">${data.question}</p>
+      <div id="inputs-area"></div>
+    `
+  }
+
+
+  /**
+   * Sends the answer to the server.
+   */
+  async submitAnswer (url, answerPayload) {
+    
+    try {
+      const response = await this.api.sendAnswer(url, answerPayload)
+      
+      // If we get a new link, it's the next question
+      if (response.nextURL) {
+        this.fetchQuestion(response.nextURL)
+      } else {
+        // No nextURL? We won!
+        this.renderVictory()
+      }
+    } catch (error) {
+      console.log(error)
+      this.renderGameOver('Wrong Answer! Game Over.')
+    }
+  }
+
+  renderGameOver (message) {
+    this.container.innerHTML = `
+      <h2>Game Over</h2>
+      <p class="error-message">${message}</p>
+      <button id="restart-btn">Try Again</button>
+    `
+    this.container.querySelector('#restart-btn').addEventListener('click', () => this.init())
+  }
+}
