@@ -164,15 +164,27 @@ export class QuizGame {
 
     const btn = document.createElement('button')
     btn.textContent = 'Submit Answer'
-    btn.addEventListener('click', () => {
+    const submit = () => {
       const selected = form.querySelector('input[name="alt"]:checked')
       if (selected) {
         this.submitAnswer(data.nextURL, { answer: selected.value })
       }
+    }
+    btn.addEventListener('click', submit)
+    form.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            submit()
+        }
     })
 
     element.appendChild(form)
     element.appendChild(btn)
+
+    const firstInput = form.querySelector('input')
+    if (firstInput) {
+        firstInput.focus()
+        firstInput.checked = true 
+    }
   }
 
 
