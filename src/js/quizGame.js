@@ -253,7 +253,7 @@ export class QuizGame {
       <button id="restart-btn">Play Again</button>
     `
 
-    this.renderHighScores()
+    this.renderHighScoreScreen()
     
     this.container.querySelector('#restart-btn').addEventListener('click', () => this.init())
   }
