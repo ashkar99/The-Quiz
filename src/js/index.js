@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize the game
   const game = new QuizGame(appContainer)
-  
+
   // Start the game
   game.init()
 })

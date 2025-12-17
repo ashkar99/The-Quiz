@@ -10,7 +10,7 @@ export class QuizAPI {
    */
   async getQuestion (url) {
     const response = await fetch(url)
-    
+
     if (!response.ok) {
       throw new Error(`Server returned status: ${response.status}`)
     }
@@ -21,8 +21,8 @@ export class QuizAPI {
   /**
    * Sends an answer to the server.
    * @param {string} url - The URL to post the answer.
-   * @param {string|object} answer - The answer data 
-   * @returns {Promise<object>} - The JSON response from the server 
+   * @param {string|object} answer - The answer data
+   * @returns {Promise<object>} - The JSON response from the server
    */
   async sendAnswer (url, answer) {
     const response = await fetch(url, {
