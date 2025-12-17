@@ -41,7 +41,10 @@ export class QuizGame {
       <p>Enter your nickname to start.</p>
       <input type="text" id="nickname" placeholder="Nickname" autofocus />
       <br>
-      <button id="start-btn">Start Game</button>
+      <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+        <button id="start-btn">Start Game</button>
+        <button id="highscore-btn">High Scores</button>
+      </div>
       <div id="message" class="error-message"></div>
     `
 
@@ -56,6 +59,7 @@ export class QuizGame {
         this.showMessage('Please enter a nickname!', 'error')
       }
     })
+    this.container.querySelector('#highscore-btn').addEventListener('click', () => this.renderHighScoreScreen())
   }
 
   /**
@@ -220,9 +224,13 @@ export class QuizGame {
     this.container.innerHTML = `
       <h2>Game Over</h2>
       <p class="error-message">${message}</p>
-      <button id="restart-btn">Try Again</button>
+      <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+        <button id="restart-btn">Try Again</button>
+        <button id="highscore-btn">High Scores</button>
+      </div>
     `
     this.container.querySelector('#restart-btn').addEventListener('click', () => this.init())
+    this.container.querySelector('#highscore-btn').addEventListener('click', () => this.renderHighScoreScreen())
   }
 
   renderVictory () {
@@ -245,25 +253,40 @@ export class QuizGame {
       <button id="restart-btn">Play Again</button>
     `
 
-    // Render the High Score List
-    const listEl = this.container.querySelector('#score-list-ol')
-    const topScores = this.storage.getHighScores()
-
-    if (topScores.length === 0) {
-        listEl.innerHTML = '<li>No scores yet!</li>'
-    } else {
-        topScores.forEach(score => {
-            const li = document.createElement('li')
-            // Convert ms to seconds for display
-            const seconds = (score.time / 1000).toFixed(2)
-            li.textContent = `${score.nickname} - ${seconds}s`
-            listEl.appendChild(li)
-        })
-    }
+    this.renderHighScores()
     
     this.container.querySelector('#restart-btn').addEventListener('click', () => this.init())
   }
-  
+
+  /**
+   * Renders the High Score list.
+   */
+  renderHighScoreScreen () {
+    const topScores = this.storage.getHighScores()
+
+    this.container.innerHTML = `
+      <h2>Top 5 High Scores</h2>
+      <ol id="score-list-ol" style="text-align: left; display: inline-block; margin: 0 auto;"></ol>
+      <br><br>
+      <button id="back-btn">Back to Start</button>
+    `
+
+    const listEl = this.container.querySelector('#score-list-ol')
+    
+    if (topScores.length === 0) {
+      listEl.innerHTML = '<li>No scores yet!</li>'
+    } else {
+      topScores.forEach(score => {
+        const li = document.createElement('li')
+        const seconds = (score.time / 1000).toFixed(2)
+        li.textContent = `${score.nickname} : ${seconds} seconds`
+        listEl.appendChild(li)
+      })
+    }
+
+    this.container.querySelector('#back-btn').addEventListener('click', () => this.renderStartScreen())
+  }
+
   showMessage(msg, type) {
       const el = this.container.querySelector('#message')
       if(el) {
