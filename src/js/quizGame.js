@@ -47,8 +47,15 @@ export class QuizGame {
       </div>
       <div id="message" class="error-message"></div>
     `
-
-    this.container.querySelector('#start-btn').addEventListener('click', () => {
+    const input = this.container.querySelector('#nickname')
+    const startBtn = this.container.querySelector('#start-btn')
+    
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            startBtn.click()
+        }
+    })
+    startBtn.addEventListener('click', () => {
       const input = this.container.querySelector('#nickname')
       const nickname = input.value.trim()
 
@@ -122,6 +129,11 @@ export class QuizGame {
     const btn = document.createElement('button')
     btn.textContent = 'Submit Answer'
 
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            btn.click()
+        }
+    })
     btn.addEventListener('click', () => {
         if(input.value) {
             this.submitAnswer(data.nextURL, { answer: input.value })
