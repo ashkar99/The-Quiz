@@ -43,22 +43,43 @@ export class QuizGame {
       <br>
       <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
         <button id="start-btn">Start Game</button>
-        <button id="highscore-btn">High Scores</button>
+        <button id="highscore-btn" style="background-color: #555;">High Scores</button>
       </div>
       <div id="message" class="error-message"></div>
+      <p style="font-size: 0.8rem; margin-top: 20px; color: #666;">
+        Type name & press <strong>Enter</strong>. Use <strong>&darr;</strong> for menu.
+      </p>
     `
+
     const input = this.container.querySelector('#nickname')
     const startBtn = this.container.querySelector('#start-btn')
+    const highscoreBtn = this.container.querySelector('#highscore-btn')
 
     input.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') {
-        startBtn.click()
+        startBtn.click() // Enter starts the game
+      } else if (event.key === 'ArrowDown') {
+        startBtn.focus() // Down Arrow jumps to the buttons
       }
     })
-    startBtn.addEventListener('click', () => {
-      const input = this.container.querySelector('#nickname')
-      const nickname = input.value.trim()
 
+    // BUTTON NAVIGATION (Arrow Keys)
+    const handleBtnNav = (event) => {
+        if (event.key === 'ArrowRight') {
+            highscoreBtn.focus()
+        } else if (event.key === 'ArrowLeft') {
+            startBtn.focus()
+        } else if (event.key === 'ArrowUp') {
+            input.focus() // Up Arrow goes back to text box
+        }
+    }
+
+    startBtn.addEventListener('keydown', handleBtnNav)
+    highscoreBtn.addEventListener('keydown', handleBtnNav)
+
+    // CLICK LISTENERS
+    startBtn.addEventListener('click', () => {
+      const nickname = input.value.trim()
       if (nickname) {
         this.nickname = nickname
         this.startGame()
@@ -66,7 +87,8 @@ export class QuizGame {
         this.showMessage('Please enter a nickname!', 'error')
       }
     })
-    this.container.querySelector('#highscore-btn').addEventListener('click', () => this.renderHighScoreScreen())
+
+    highscoreBtn.addEventListener('click', () => this.renderHighScoreScreen())
   }
 
   /**
@@ -256,18 +278,38 @@ export class QuizGame {
         <button id="restart-btn">Try Again</button>
         <button id="highscore-btn">High Scores</button>
       </div>
+      <p style="font-size: 0.8rem; margin-top: 20px; color: #666;">
+        Use <strong>&larr; &rarr;</strong> to move, <strong>Enter</strong> to select
+      </p>
     `
-    this.container.querySelector('#restart-btn').addEventListener('click', () => this.init())
-    this.container.querySelector('#highscore-btn').addEventListener('click', () => this.renderHighScoreScreen())
+    const restartBtn = this.container.querySelector('#restart-btn')
+    const highscoreBtn = this.container.querySelector('#highscore-btn')
+
+    // Click Listeners
+    restartBtn.addEventListener('click', () => this.init())
+    highscoreBtn.addEventListener('click', () => this.renderHighScoreScreen())
+
+    // Auto-focus the first button so the keyboard works immediately
+    restartBtn.focus()
+
+    // Add Arrow Key Navigation for the Buttons
+    const handleArrowNav = (event) => {
+        if (event.key === 'ArrowRight') {
+            highscoreBtn.focus()
+        } else if (event.key === 'ArrowLeft') {
+            restartBtn.focus()
+        }
+    }
+
+    restartBtn.addEventListener('keydown', handleArrowNav)
+    highscoreBtn.addEventListener('keydown', handleArrowNav)
   }
 
   renderVictory () {
     const timeInSeconds = (this.totalTime / 1000).toFixed(2)
-
-    // Save the score
     this.storage.saveScore(this.nickname, this.totalTime)
 
-    // Render the Victory Screen with score
+    // Render the Victory Screen
     this.container.innerHTML = `
       <h2 class="success-message">Victory!</h2>
       <p>Well done, ${this.nickname}!</p>
@@ -278,10 +320,14 @@ export class QuizGame {
         <ol id="score-list-ol" style="text-align: left; display: inline-block; margin: 0 auto;"></ol>
       </div>
 
+      <br>
       <button id="restart-btn">Play Again</button>
+      <p style="font-size: 0.8rem; margin-top: 20px; color: #666;">
+        Press <strong>Enter</strong> to restart
+      </p>
     `
 
-    // Populate the list of high scores
+    // Populate the list manually
     const listEl = this.container.querySelector('#score-list-ol')
     const topScores = this.storage.getHighScores()
 
@@ -295,9 +341,11 @@ export class QuizGame {
         listEl.appendChild(li)
       })
     }
-
-    // Attach listener
-    this.container.querySelector('#restart-btn').addEventListener('click', () => this.init())
+    
+    // Keyboard Support
+    const restartBtn = this.container.querySelector('#restart-btn')
+    restartBtn.addEventListener('click', () => this.init())
+    restartBtn.focus()
   }
 
   /**
@@ -311,10 +359,12 @@ export class QuizGame {
       <ol id="score-list-ol" style="text-align: left; display: inline-block; margin: 0 auto;"></ol>
       <br><br>
       <button id="back-btn">Back to Start</button>
+      <p style="font-size: 0.8rem; margin-top: 20px; color: #666;">
+        Press <strong>Enter</strong> to go back
+      </p>
     `
 
     const listEl = this.container.querySelector('#score-list-ol')
-
     if (topScores.length === 0) {
       listEl.innerHTML = '<li>No scores yet!</li>'
     } else {
@@ -326,7 +376,9 @@ export class QuizGame {
       })
     }
 
-    this.container.querySelector('#back-btn').addEventListener('click', () => this.renderStartScreen())
+    const backBtn = this.container.querySelector('#back-btn')
+    backBtn.addEventListener('click', () => this.renderStartScreen())
+    backBtn.focus()
   }
 
   showMessage (msg, type) {
