@@ -239,7 +239,7 @@ export class QuizGame {
     // Save the score
     this.storage.saveScore(this.nickname, this.totalTime)
 
-    // Render the Victory Screen
+    // Render the Victory Screen with score
     this.container.innerHTML = `
       <h2 class="success-message">Victory!</h2>
       <p>Well done, ${this.nickname}!</p>
@@ -247,14 +247,28 @@ export class QuizGame {
       
       <div id="high-score-list">
         <h3>High Scores (Top 5)</h3>
-        <ol id="score-list-ol"></ol>
+        <ol id="score-list-ol" style="text-align: left; display: inline-block; margin: 0 auto;"></ol>
       </div>
 
       <button id="restart-btn">Play Again</button>
     `
 
-    this.renderHighScoreScreen()
+    // Populate the list of high scores
+    const listEl = this.container.querySelector('#score-list-ol')
+    const topScores = this.storage.getHighScores()
+
+    if (topScores.length === 0) {
+      listEl.innerHTML = '<li>No scores yet!</li>'
+    } else {
+      topScores.forEach(score => {
+        const li = document.createElement('li')
+        const seconds = (score.time / 1000).toFixed(2)
+        li.textContent = `${score.nickname} : ${seconds} seconds`
+        listEl.appendChild(li)
+      })
+    }
     
+    // Attach listener
     this.container.querySelector('#restart-btn').addEventListener('click', () => this.init())
   }
 
