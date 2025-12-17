@@ -1,4 +1,5 @@
 import { QuizAPI } from './api.js'
+import { HighScoreManager } from './storage.js'
 
 /**
  * QuizGame
@@ -12,6 +13,7 @@ export class QuizGame {
   constructor (container) {
     this.container = container
     this.api = new QuizAPI()
+    this.storage = new HighScoreManager()
     
     // Game State
     this.nickname = ''
@@ -225,14 +227,39 @@ export class QuizGame {
 
   renderVictory () {
     const timeInSeconds = (this.totalTime / 1000).toFixed(2)
+    
+    // Save the score
+    this.storage.saveScore(this.nickname, this.totalTime)
+
+    // Render the Victory Screen
     this.container.innerHTML = `
       <h2 class="success-message">Victory!</h2>
       <p>Well done, ${this.nickname}!</p>
       <p>Total Time: ${timeInSeconds} seconds</p>
-      <button id="restart-btn">Play Again</button>
       
-      <div id="high-score-list"></div> 
+      <div id="high-score-list">
+        <h3>High Scores (Top 5)</h3>
+        <ol id="score-list-ol"></ol>
+      </div>
+
+      <button id="restart-btn">Play Again</button>
     `
+
+    // Render the High Score List
+    const listEl = this.container.querySelector('#score-list-ol')
+    const topScores = this.storage.getHighScores()
+
+    if (topScores.length === 0) {
+        listEl.innerHTML = '<li>No scores yet!</li>'
+    } else {
+        topScores.forEach(score => {
+            const li = document.createElement('li')
+            // Convert ms to seconds for display
+            const seconds = (score.time / 1000).toFixed(2)
+            li.textContent = `${score.nickname} - ${seconds}s`
+            listEl.appendChild(li)
+        })
+    }
     
     this.container.querySelector('#restart-btn').addEventListener('click', () => this.init())
   }
