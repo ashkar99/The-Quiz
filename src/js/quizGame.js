@@ -14,19 +14,19 @@ export class QuizGame {
     this.container = container
     this.api = new QuizAPI()
     this.storage = new HighScoreManager()
-    
+
     // Game State
     this.nickname = ''
     this.totalTime = 0 // Total time taken for the whole game
     this.questionStartTime = 0 // Timestamp when the current question started
     this.timerInterval = null
-    
+
     // The starting URL for the quiz
     this.startUrl = 'https://courselab.lnu.se/quiz/question/1'
   }
 
   /**
-   * Initializes the game 
+   * Initializes the game
    */
   init () {
     this.renderStartScreen()
@@ -49,11 +49,11 @@ export class QuizGame {
     `
     const input = this.container.querySelector('#nickname')
     const startBtn = this.container.querySelector('#start-btn')
-    
+
     input.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            startBtn.click()
-        }
+      if (event.key === 'Enter') {
+        startBtn.click()
+      }
     })
     startBtn.addEventListener('click', () => {
       const input = this.container.querySelector('#nickname')
@@ -80,15 +80,14 @@ export class QuizGame {
 
   /**
    * Fetches a question and renders it.
-   * @param {string} url 
+   * @param {string} url - The URL to fetch the question from.
    */
   async fetchQuestion (url) {
     try {
       this.container.innerHTML = '<h3>Loading question...</h3>'
-      
+
       const data = await this.api.getQuestion(url)
       this.renderQuestion(data)
-      
     } catch (error) {
       console.error(error)
       this.renderGameOver('Network Error or Server Down.')
@@ -119,25 +118,27 @@ export class QuizGame {
     this.startTimer()
   }
 
-    /**
+  /**
    * Renders a simple Text Input for open questions.
+   * @param {HTMLElement} element - The container to render the input into.
+   * @param {object} data - The question data containing nextURL.
    */
   renderTextInput (element, data) {
     const input = document.createElement('input')
     input.type = 'text' // Text input
-    
+
     const btn = document.createElement('button')
     btn.textContent = 'Submit Answer'
 
     input.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            btn.click()
-        }
+      if (event.key === 'Enter') {
+        btn.click()
+      }
     })
     btn.addEventListener('click', () => {
-        if(input.value) {
-            this.submitAnswer(data.nextURL, { answer: input.value })
-        }
+      if (input.value) {
+        this.submitAnswer(data.nextURL, { answer: input.value })
+      }
     })
 
     element.appendChild(input)
@@ -147,6 +148,8 @@ export class QuizGame {
 
   /**
    * Renders Radio Buttons for multi-choice questions.
+   * @param {HTMLElement} element - The container to render the alternatives into.
+   * @param {object} data - The question data containing alternatives and nextURL.
    */
   renderAlternatives (element, data) {
     const form = document.createElement('div')
@@ -172,9 +175,9 @@ export class QuizGame {
     }
     btn.addEventListener('click', submit)
     form.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            submit()
-        }
+      if (event.key === 'Enter') {
+        submit()
+      }
     })
 
     element.appendChild(form)
@@ -182,11 +185,10 @@ export class QuizGame {
 
     const firstInput = form.querySelector('input')
     if (firstInput) {
-        firstInput.focus()
-        firstInput.checked = true 
+      firstInput.focus()
+      firstInput.checked = true
     }
   }
-
 
   /**
    * Handles the countdown logic
@@ -196,17 +198,17 @@ export class QuizGame {
     const timerBar = document.querySelector('#timer-bar')
     const timerContainer = document.querySelector('#timer-container')
     timerContainer.style.display = 'block'
+
     
-    let width = 100
     // Reset any existing timer
     if (this.timerInterval) clearInterval(this.timerInterval)
 
     this.timerInterval = setInterval(() => {
-      width -= 10 // Reduce timer bar width
+      this.timerWidth -= 10 // Reduce timer bar width
       const elapsed = (Date.now() - this.questionStartTime) / 1000
       const remaining = 10 - elapsed
       const percentage = (remaining / 10) * 100
-      
+
       if (timerBar) timerBar.style.width = `${percentage}%`
 
       if (remaining <= 0) {
@@ -219,19 +221,21 @@ export class QuizGame {
   stopTimer () {
     clearInterval(this.timerInterval)
     // Add the time taken for this question to total time
-    const elapsed = (Date.now() - this.questionStartTime) 
+    const elapsed = (Date.now() - this.questionStartTime)
     this.totalTime += elapsed
   }
 
   /**
    * Sends the answer to the server.
+   * @param {string} url - The URL to send the answer to.
+   * @param {object} answerPayload - The answer data to send.
    */
   async submitAnswer (url, answerPayload) {
     this.stopTimer()
-    
+
     try {
       const response = await this.api.sendAnswer(url, answerPayload)
-      
+
       // Get next question or end game
       if (response.nextURL) {
         this.fetchQuestion(response.nextURL)
@@ -259,7 +263,7 @@ export class QuizGame {
 
   renderVictory () {
     const timeInSeconds = (this.totalTime / 1000).toFixed(2)
-    
+
     // Save the score
     this.storage.saveScore(this.nickname, this.totalTime)
 
@@ -291,7 +295,7 @@ export class QuizGame {
         listEl.appendChild(li)
       })
     }
-    
+
     // Attach listener
     this.container.querySelector('#restart-btn').addEventListener('click', () => this.init())
   }
@@ -310,7 +314,7 @@ export class QuizGame {
     `
 
     const listEl = this.container.querySelector('#score-list-ol')
-    
+
     if (topScores.length === 0) {
       listEl.innerHTML = '<li>No scores yet!</li>'
     } else {
@@ -325,11 +329,11 @@ export class QuizGame {
     this.container.querySelector('#back-btn').addEventListener('click', () => this.renderStartScreen())
   }
 
-  showMessage(msg, type) {
-      const el = this.container.querySelector('#message')
-      if(el) {
-          el.textContent = msg
-          el.className = type === 'error' ? 'error-message' : 'success-message'
-      }
+  showMessage (msg, type) {
+    const el = this.container.querySelector('#message')
+    if (el) {
+      el.textContent = msg
+      el.className = type === 'error' ? 'error-message' : 'success-message'
+    }
   }
 }

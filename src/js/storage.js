@@ -21,12 +21,12 @@ export class HighScoreManager {
 
   /**
    * Saves a new score if it qualifies for the top 5.
-   * @param {string} nickname 
+   * @param {string} nickname - The player's nickname
    * @param {number} totalTime (in milliseconds)
    */
   saveScore (nickname, totalTime) {
     const scores = this.getHighScores()
-    
+
     // Add the new result
     scores.push({ nickname, time: totalTime })
 
