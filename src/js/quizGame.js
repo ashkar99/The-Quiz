@@ -65,13 +65,13 @@ export class QuizGame {
 
     // BUTTON NAVIGATION (Arrow Keys)
     const handleBtnNav = (event) => {
-        if (event.key === 'ArrowRight') {
-            highscoreBtn.focus()
-        } else if (event.key === 'ArrowLeft') {
-            startBtn.focus()
-        } else if (event.key === 'ArrowUp') {
-            input.focus() // Up Arrow goes back to text box
-        }
+      if (event.key === 'ArrowRight') {
+        highscoreBtn.focus()
+      } else if (event.key === 'ArrowLeft') {
+        startBtn.focus()
+      } else if (event.key === 'ArrowUp') {
+        input.focus() // Up Arrow goes back to text box
+      }
     }
 
     startBtn.addEventListener('keydown', handleBtnNav)
@@ -221,7 +221,6 @@ export class QuizGame {
     const timerContainer = document.querySelector('#timer-container')
     timerContainer.style.display = 'block'
 
-    
     // Reset any existing timer
     if (this.timerInterval) clearInterval(this.timerInterval)
 
@@ -294,11 +293,11 @@ export class QuizGame {
 
     // Add Arrow Key Navigation for the Buttons
     const handleArrowNav = (event) => {
-        if (event.key === 'ArrowRight') {
-            highscoreBtn.focus()
-        } else if (event.key === 'ArrowLeft') {
-            restartBtn.focus()
-        }
+      if (event.key === 'ArrowRight') {
+        highscoreBtn.focus()
+      } else if (event.key === 'ArrowLeft') {
+        restartBtn.focus()
+      }
     }
 
     restartBtn.addEventListener('keydown', handleArrowNav)
@@ -341,7 +340,7 @@ export class QuizGame {
         listEl.appendChild(li)
       })
     }
-    
+
     // Keyboard Support
     const restartBtn = this.container.querySelector('#restart-btn')
     restartBtn.addEventListener('click', () => this.init())
