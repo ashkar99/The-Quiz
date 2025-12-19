@@ -275,7 +275,7 @@ export class QuizGame {
       <p class="error-message">${message}</p>
       <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
         <button id="restart-btn">Try Again</button>
-        <button id="highscore-btn">High Scores</button>
+        <button id="highscore-btn" style="background-color: #555;">High Scores</button>
       </div>
       <p style="font-size: 0.8rem; margin-top: 20px; color: #666;">
         Use <strong>&larr; &rarr;</strong> to move, <strong>Enter</strong> to select
